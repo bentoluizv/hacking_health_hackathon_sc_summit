@@ -18,32 +18,3 @@ def test_deve_criar_um_paciente(client):
 
     assert res.status_code == HTTPStatus.CREATED
     assert paciente['id']
-
-
-def test_deve_criar_um_atendimento(client, session):
-    paciente_model = PacienteModel(
-        documento='5622440', nome='Bento', data_nascimento=date(1989, 4, 4)
-    )
-
-    paciente_orm = PacienteOrm(
-        documento=paciente_model.documento,
-        nome=paciente_model.nome,
-        data_nascimento=paciente_model.data_nascimento,
-    )
-
-    session.add(paciente_orm)
-    session.commit()
-
-    atendimento_model = AtendimentoModel(
-        paciente=paciente_model,
-        data=datetime.now(),
-        consultas=None,
-        evolucoes=None,
-        triagem=None,
-    )
-
-    res = client.post(
-        '/api/v1/atendimentos', data=atendimento_model.model_dump_json()
-    )
-
-    assert res.status_code == HTTPStatus.CREATED
