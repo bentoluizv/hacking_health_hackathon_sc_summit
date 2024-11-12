@@ -10,25 +10,19 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
-
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
 </head>
 
-<body class="poppins-regular antialiased text-zinc-800 bg-zinc-200">
-    <div class="h-screen w-screen flex flex-col">
-        <header class=" p-1 flex flex-col bg-zinc-800 text-green-600">
-            <h1 class="text-3xl font-bold max-w-[200px]">{% block header %}{% endblock %}</h1>
+<body class="poppins-regular antialiased text-zinc-800 bg-zinc-100">
+    <div class="container mx-auto h-screen flex flex-col">
+        <header class=" p-1 flex flex-col text-green-600 items-center justify-center">
+            <h1 class="text-3xl font-bold">{% block header %}{% endblock %}</h1>
         </header>
 
         <main class="flex-grow flex flex-col p-4 justify-center">
             {% block content %}{% endblock %}
         </main>
-
-        <footer class="p-1 bg-zinc-800 text-green-600 flex flex-col justify-end items-center">
-            <p class="font-mono text-xs font-semibold">Python Floripa | SC Summit Hackathon</p>
-        </footer>
     </div>
 </body>
 
