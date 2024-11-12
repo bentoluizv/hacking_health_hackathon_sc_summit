@@ -9,7 +9,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-    <title>{% block title %}{% endblock %}</title>
+    <title>Hackathon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
 </head>
@@ -22,28 +22,53 @@
 
         <main class="flex-grow flex flex-col p-4 gap-5 items-center">
             <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl mx-auto">
-                <h2 class="text-xl font-semibold text-zinc-800 mb-4">Dados do Paciente</h2>
-                <div class="text-zinc-700 space-y-2">
-                    <p><strong>Nome:</strong> {{ paciente.nome }}</p>
-                    <p><strong>Data de Nascimento:</strong> {{ paciente.data_nascimento }}</p>
-                </div>
-            </div>
-
-            <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl mx-auto">
                 <form id="triagem-form" class="flex flex-col gap-6">
                     <label for="triagem" hidden class="text-zinc-800 font-semibold mb-2">Observações de Triagem</label>
                     <textarea id="triagem" name="triagem" rows="16"
-                        class="w-full px-4 py-2 rounded-lg border border-zinc-300 bg-zinc-100 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200 ease-in-out"
+                        class="w-full px-4 py-2 rounded-lg border border-zinc-300 bg-zinc-100 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition duration-200 ease-in-out"
                         placeholder="Digite aqui as observações da triagem"></textarea>
 
                     <button type="submit"
-                        class="text-zinc-200 bg-blue-500 border border-blue-600 hover:bg-blue-700 hover:border-blue-400 focus:bg-blue-800 focus:border-blue-500 hover:text-white focus:text-white font-semibold py-3 px-6 rounded-lg w-full transition-all duration-200 ease-in-out shadow-md hover:shadow-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        class="text-zinc-800 bg-green-500 border border-green-600 hover:bg-green-700 hover:border-green-400 focus:bg-green-800 focus:border-green-500 hover:text-white focus:text-white font-semibold py-3 px-6 rounded-lg w-full transition-all duration-200 ease-in-out shadow-md hover:shadow-lg focus:shadow-lg focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                         Enviar Triagem
                     </button>
                 </form>
             </div>
         </main>
     </div>
+
+    <script>
+        document.getElementById('triagem-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const triagemText = document.getElementById('triagem').value;
+
+
+            const data = {
+                triagem: triagemText
+            };
+
+            try {
+                const response = await fetch('/api/v1/triagem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar a triagem');
+                }
+
+                const result = await response.json();
+                console.log('Triagem enviada com sucesso:', result);
+
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        });
+    </script>
 </body>
 
 </html>
