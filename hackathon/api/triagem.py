@@ -15,7 +15,7 @@ from hackathon.models import AtendimentoOrm
 from hackathon.schemas import MotivoModel, SinaisVitaisModel, TriagemModel
 
 router = APIRouter(
-    prefix='/triagem',
+    prefix='/api/v1/triagem',
     tags=['Triagem'],
     dependencies=[],
 )

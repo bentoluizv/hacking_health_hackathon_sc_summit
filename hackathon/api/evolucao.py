@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from hackathon.db import get_session
 
 router = APIRouter(
-    prefix='/evolucao',
+    prefix='/api/v1/evolucao',
     tags=['Evolução Enfermagem'],
     dependencies=[],
 )
