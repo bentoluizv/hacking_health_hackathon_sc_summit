@@ -10,9 +10,14 @@ def test_deve_criar_um_paciente(client):
         documento='5622440', nome='Bento', data_nascimento=date(1989, 4, 4)
     )
 
-    res = client.post('/paciente', data=paciente_model.model_dump_json())
+    res = client.post(
+        '/api/v1/pacientes', data=paciente_model.model_dump_json()
+    )
+
+    paciente = res.json()
 
     assert res.status_code == HTTPStatus.CREATED
+    assert paciente['id']
 
 
 def test_deve_criar_um_atendimento(client, session):
@@ -37,6 +42,8 @@ def test_deve_criar_um_atendimento(client, session):
         triagem=None,
     )
 
-    res = client.post('/atendimento', data=atendimento_model.model_dump_json())
+    res = client.post(
+        '/api/v1/atendimentos', data=atendimento_model.model_dump_json()
+    )
 
     assert res.status_code == HTTPStatus.CREATED
