@@ -130,6 +130,8 @@ class SinaisVitaisOrm(Base):
 
     frequencia_respiratoria: Mapped[str] = mapped_column(String)
 
+    saturacao_oxigenio: Mapped[str] = mapped_column(String)
+
     triagem: Mapped[list['TriagemOrm']] = relationship(
         secondary=sinais_vitais_por_triagem_association,
         back_populates='sinais_vitais',
