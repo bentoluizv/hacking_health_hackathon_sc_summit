@@ -1,8 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 from http import HTTPStatus
 
-from hackathon.models import PacienteOrm
-from hackathon.schemas import AtendimentoModel, PacienteModel
+from hackathon.schemas import PacienteModel
 
 
 def test_deve_criar_um_paciente(client):
