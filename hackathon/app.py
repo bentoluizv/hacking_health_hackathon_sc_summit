@@ -29,7 +29,7 @@ async def triagem_page(
 ):
     return templates.TemplateResponse(
         request=request,
-        name='index.html',
+        name='triagem.html',
     )
 
 
