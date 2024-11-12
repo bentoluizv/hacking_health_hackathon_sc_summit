@@ -23,7 +23,7 @@ from hackathon.schemas import (
 )
 
 router = APIRouter(
-    prefix='/atendimento',
+    prefix='/api/v1/atendimentos',
     tags=['Atendimento'],
     dependencies=[],
 )
@@ -96,6 +96,7 @@ def listar_atendimentos(session: Annotated[Session, Depends(get_session)]):
                         temperatura=sinais_vitais_orm.temperatura,
                         frequencia_cardiaca=sinais_vitais_orm.frequencia_cardiaca,
                         frequencia_respiratoria=sinais_vitais_orm.frequencia_respiratoria,
+                        saturacao_oxigenio=sinais_vitais_orm.saturacao_oxigenio,
                     )
                     for sinais_vitais_orm in atendimento_orm.triagem.sinais_vitais  # noqa: E501
                 ],
@@ -166,13 +167,14 @@ def listar_atendimentos(session: Annotated[Session, Depends(get_session)]):
                     resposta_ao_tratamento=evolucao_enfermagem_orm.resposta_ao_tratamento,
                     sinais_vitais=[
                         SinaisVitaisModel(
-                            id=evolucao_orm.id,
-                            pressao_arterial=evolucao_orm.pressao_arterial,
-                            frequencia_cardiaca=evolucao_orm.frequencia_cardiaca,
-                            frequencia_respiratoria=evolucao_orm.frequencia_respiratoria,
-                            temperatura=evolucao_orm.temperatura,
+                            id=sinais_vitais_orm.id,
+                            pressao_arterial=sinais_vitais_orm.pressao_arterial,
+                            frequencia_cardiaca=sinais_vitais_orm.frequencia_cardiaca,
+                            frequencia_respiratoria=sinais_vitais_orm.frequencia_respiratoria,
+                            temperatura=sinais_vitais_orm.temperatura,
+                            saturacao_oxigenio=sinais_vitais_orm.saturacao_oxigenio,
                         )
-                        for evolucao_orm in evolucao_enfermagem_orm.sinais_vitais  # noqa: E501
+                        for sinais_vitais_orm in evolucao_enfermagem_orm.sinais_vitais  # noqa: E501
                     ],
                 )
                 for evolucao_enfermagem_orm in atendimento_orm.evolucoes
