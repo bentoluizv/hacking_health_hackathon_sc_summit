@@ -1,5 +1,4 @@
-from datetime import date, datetime
-from typing import List
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -8,377 +7,186 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PacienteModel(ModelConfig):
-    """Informações sobre um paciente, incluindo nome e data de nascimento"""
+class SinaisVitaisModel(BaseModel):
+    """
+    Representa os sinais vitais de um paciente, que são medições
+    essenciais para avaliar o estado de saúde do paciente durante
+    o atendimento médico. Esses dados fornecem informações cruciais
+    sobre o funcionamento do corpo e podem indicar possíveis condições
+    médicas, como infecções, problemas respiratórios ou cardiovasculares.
+    Cada campo é opcional e pode ser 'None' caso a informação não
+    esteja disponível ou não tenha sido registrada.
 
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    documento: str = Field(description='Numero do documento de identificação')
-
-    nome: str = Field(description='Nome completo do paciente.')
-
-    data_nascimento: date = Field(
-        description='Data de nascimento do paciente no formato AAAA-MM-DD.'
-    )
-
-
-class SinaisVitaisModel(ModelConfig):
-    """Representa os sinais vitais de um paciente, como pressão arterial,
-    temperatura, frequência cardíaca e respiratória. Todos os campos são
-    obrigatórios."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    pressao_arterial: str | None = Field(
-        description='Pressão arterial do paciente em mmHg (ex.: 130/85).'
-    )
-
-    temperatura: str | None = Field(
-        description='Temperatura corporal do paciente em °C (ex.: 37,8°C).'
-    )
-
-    frequencia_cardiaca: str | None = Field(
-        description='Frequência cardíaca do paciente em bpm (ex.: 95 bpm).'
-    )
-
-    frequencia_respiratoria: str | None = Field(
-        description='Frequência respiratória do paciente em rpm (ex.: 18 rpm).'
-    )
-
-    saturacao_oxigenio: str | None = Field(
-        description='Saturação do oxigênio do paciente em porcentagem(ex: 97%)'
-    )
-
-
-class DiagnosticoModel(ModelConfig):
-    """Representa o diagnóstico inicial do paciente, incluindo a condição
-    principal
-    diagnosticada e, se aplicável, os diagnósticos diferenciais considerados.
+    Exemplos de sinais vitais:
+    - pressao_arterial: A pressão arterial é medida em milímetros
+      de mercúrio (mmHg) e indica a força que o sangue exerce
+      sobre as paredes das artérias. Ela é dividida em dois valores:
+      a pressão sistólica (máxima) e a diastólica (mínima). Exemplo:
+      '120/80'.
+    - temperatura: A temperatura corporal é um indicador de infecção
+      ou inflamação. Exemplo de entrada: '37.5°C' pode indicar febre
+      leve.
+    - frequencia_cardiaca: A frequência cardíaca indica o número de
+      batimentos do coração por minuto (bpm). Um valor normal para
+      adultos em repouso é entre 60 e 100 bpm. Exemplo: '72 bpm' está
+      dentro do intervalo considerado normal.
+    - frequencia_respiratoria: A frequência respiratória indica o
+      número de respirações realizadas por minuto. O valor normal é
+      entre 12 e 20 respirações por minuto em adultos em repouso.
+      Exemplo: '16 rpm' indica uma respiração normal.
+    - saturacao_oxigenio: A saturação de oxigênio no sangue, medida
+      em porcentagem. Exemplo: '98%' é normal, enquanto valores
+      abaixo de 90% podem indicar insuficiência respiratória grave.
     """
 
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
+    id: Optional[int] = Field(
+        None,
+        description="""ID gerado automaticamente ao registrar o recurso
+        no sistema de triagem, normalmente atribuído pelo banco de dados
+        do hospital.""",
     )
 
-    condicao_principal: str | None = Field(
-        description="""Nome da condição principal diagnosticada pelo médico,
-        que motivou o atendimento."""
+    pressao_arterial: Optional[str] = Field(
+        None,
+        description="""Pressão arterial medida em milímetros de mercúrio
+        (mmHg). O formato esperado é 'sistólica/diastólica'. Exemplo:
+        '120/80'. Se a pressão sistólica for superior a 140 ou a diastólica
+        superior a 90, pode indicar hipertensão e exigir atenção imediata.""",
     )
 
-    diagnostico_diferencial: list[str] | None = Field(
-        description="""Lista de diagnósticos diferenciais que o médico
-        considerou para a condição do paciente, caso aplicável.""",
+    temperatura: Optional[str] = Field(
+        None,
+        description="""Temperatura corporal medida em graus Celsius (°C).
+        Uma temperatura acima de 37.5°C pode indicar febre e possível
+        infecção. Exemplo de entrada: '38.0°C'.""",
     )
 
-
-class ExameModel(ModelConfig):
-    """Representa um exame solicitado durante a consulta médica, incluindo
-    informações sobre o nome do exame, tipo, status, e resultado quando
-    disponível."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
+    frequencia_cardiaca: Optional[str] = Field(
+        None,
+        description="""Frequência cardíaca medida em batimentos por minuto
+        (bpm). Para um adulto em repouso, valores normais variam entre
+        60 e 100 bpm. Exemplo: '72 bpm' é considerado normal, enquanto
+        uma frequência cardíaca inferior a 60 bpm (bradicardia) ou superior
+        a 100 bpm (taquicardia) pode indicar problemas de saúde.""",
     )
 
-    nome_exame: str | None = Field(
-        description="""Nome do exame solicitado durante a consulta médica,
-        como hemograma, ultrassonografia, entre outros. O nome descreve
-        o exame ou procedimento a ser realizado para investigação da condição
-         do paciente."""
+    frequencia_respiratoria: Optional[str] = Field(
+        None,
+        description="""Frequência respiratória medida em respirações por
+        minuto (rpm). A frequência normal para um adulto é entre 12 e 20
+        rpm. Exemplo: '18 rpm' indica respiração normal. Frequências fora
+        dessa faixa podem indicar dificuldades respiratórias.""",
     )
 
-    data_solicitacao: datetime | None = Field(
-        description="""Data e hora exatas em que o exame foi solicitado pelo
-        médico, marcando o momento em que a necessidade do exame foi
-        identificada
-        durante o atendimento do paciente."""
-    )
-
-    tipo: str | None = Field(
-        description="""Tipo de exame solicitado, por exemplo, laboratorial
-         (para análises de sangue, urina),
-        de imagem (como radiografia ou ultrassonografia), ou funcional (para
-        testes de desempenho de órgãos ou sistemas)."""
-    )
-
-    status: str | None = Field(
-        description="""Status atual do exame, representando o progresso do
-        pedido,
-        como 'pendente' (ainda não realizado), 'em andamento' (em execução),
-        ou 'concluído' (resultado disponível ou finalizado).""",
-    )
-
-    resultado: str | None = Field(
-        description="""Resultado do exame, se já disponível. Pode conter a
-        descrição dos achados
-        ou um resumo do diagnóstico fornecido a partir dos dados do exame,
-        como valores de laboratório ou imagens resultantes.""",
-    )
-
-
-class MedicamentoModel(ModelConfig):
-    """Representa um medicamento prescrito ao paciente, incluindo
-    informações sobre o nome, dose, via de administração, frequência
-    e duração do tratamento."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    nome: str | None = Field(
-        description='Nome do medicamento prescrito pelo médico.'
-    )
-
-    dose: str | None = Field(
-        description="""Dosagem prescrita do medicamento, incluindo a quantidade
-        e a unidade de medida, como 500 mg, 10 ml, 1 comprimido, etc."""
-    )
-
-    via_administracao: str | None = Field(
-        description="""Via pela qual o medicamento deve ser administrado ao
-         paciente, como oral (via boca), intravenosa, subcutânea, entre outras.
-         """
-    )
-
-    frequencia: str | None = Field(
-        description="""Frequência com que o medicamento deve ser administrado
-        ao paciente, como '8 em 8 horas', '1 vez ao dia', ou outra instrução de
-        intervalo
-        de tempo."""
-    )
-
-    duracao: str | None = Field(
-        description="""Duração do tratamento com o medicamento, como '7 dias',
-        'por 10 dias', ou outro período indicado pelo médico.""",
-    )
-
-
-class ProcedimentoModel(BaseModel):
-    """Procedimento realizado por médico ou enfermagem que pode ser
-    realizado em uma pessoa que esteja recebendo atendimento"""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso'
-    )
-    nome: str | None = Field(description='Nome do procedimento')
-    data_solicitacao: datetime | None = Field(
-        description='Data em que o procedimento foi solcitado'
-    )
-    tipo: str | None = Field(
-        description='Tipo do procedimento que foi solicitado'
-    )
-
-
-class ConsultaModel(ModelConfig):
-    """Dados detalhados sobre a consulta médica do paciente, incluindo
-    diagnóstico, exames, medicamentos e orientações."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    data_hora: datetime | None = Field(
-        description="""Data e hora exata em que a consulta foi realizada,
-        indicando o início do atendimento médico."""
-    )
-
-    diagnostico_inicial: DiagnosticoModel | None = Field(
-        description="""Diagnóstico inicial realizado pelo médico, contendo
-        a condição principal e, se aplicável, o diagnóstico diferencial
-        considerado."""
-    )
-
-    exames_solicitados: List[ExameModel] | None = Field(
-        description="""Lista dos exames solicitados para confirmar o
-        diagnóstico, como exames laboratoriais, de imagem ou outros
-         procedimentos diagnósticos.""",
-    )
-
-    procedimentos_realizados: List[ProcedimentoModel] | None = Field(
-        description="""Lista de procedimentos realizados durante a consulta,
-        como intervenções específicas ou exames físicos.""",
-    )
-
-    medicamentos_prescritos: List[MedicamentoModel] | None = Field(
-        description="""Lista de medicamentos prescritos, com detalhes como
-         nome, dosagem, via de administração e frequência de uso.""",
-    )
-
-    orientacoes: str | None = Field(
-        description="""Instruções fornecidas ao paciente sobre cuidados
-        gerais, sinais de alerta e instruções de retorno ou acompanhamento."""
-    )
-
-    urgencia: int | None = Field(
-        description="""Nível de urgência da condição do paciente em uma
-        escala de 0 (baixa prioridade) a 10 (alta prioridade), avaliado pelo
-        médico durante a consulta."""
-    )
-
-
-class EvolucaoEnfermagemModel(ModelConfig):
-    """Registro das evoluções de enfermagem no acompanhamento do paciente
-    durante o atendimento."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    data_hora: datetime | None = Field(
-        description="""Data e hora exata em que a evolução foi registrada pela
-        equipe de enfermagem, representando o momento do acompanhamento ou
-        atualização do estado do paciente."""
-    )
-
-    resposta_ao_tratamento: str | None = Field(
-        description="""Descrição detalhada de como o paciente respondeu aos
-        tratamentos e intervenções realizados,
-        como efeitos dos medicamentos administrados ou mudanças no quadro
-        clínico após a intervenção."""
-    )
-
-    sinais_vitais: List[SinaisVitaisModel] | None = Field(
-        description="""Conjunto de medições de sinais vitais registrados pela
-         enfermagem durante a evolução,
-        como pressão arterial, temperatura corporal, frequência cardíaca e
-        respiratória, que indicam o estado clínico do paciente."""
-    )
-
-    procedimentos_realizados: List[ProcedimentoModel] | None = Field(
-        description="""Lista de procedimentos de enfermagem realizados até o
-        momento da evolução,
-        como administração de medicamentos, coleta de exames laboratoriais ou
-        de imagem, monitoramento de sintomas, entre outros."""
-    )
-
-    observacoes: str | None = Field(
-        description="""Anotações adicionais sobre o estado geral do paciente,
-        incluindo observações de mudanças significativas
-        no quadro, recomendações de repouso ou cuidados especiais, ou qualquer
-        outro detalhe relevante observado pela enfermagem."""
-    )
-
-
-class MotivoModel(ModelConfig):
-    """Representa o motivo da consulta médica, incluindo o início dos sintomas,
-    o sintoma principal, sua localização e sintomas associados."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
-    )
-
-    inicio: datetime | None = Field(
-        description="""Data e hora de início dos sintomas, indicando quando o
-        paciente começou a sentir o problema que motivou a consulta."""
-    )
-
-    sintoma: str | None = Field(
-        description="""Sintoma principal que motivou a ida ao médico, como dor,
-        febre, dificuldade para respirar, entre outros. Este sintoma é o
-        principal que levou o paciente a buscar ajuda médica."""
-    )
-
-    localizacao: str | None = Field(
-        description="""Localização do sintoma no corpo, como dor no peito, dor
-        abdominal, sensação de falta de ar, etc. A localização deve ser
-        detalhada para ajudar na avaliação do problema do paciente."""
-    )
-
-    sintomas_associados: str | None = Field(
-        description="""Lista de sintomas adicionais que acompanham o sintoma
-        principal, como náuseas, tontura, febre, entre outros. Cada elemento da
-        lista representa um sintoma associado observado pelo paciente e/ou pelo
-        profissional de saúde. Deve ser uma string com os sintomas separados
-        po virgula"""
+    saturacao_oxigenio: Optional[str] = Field(
+        None,
+        description="""Saturação de oxigênio no sangue, medida em porcentagem.
+        Um valor normal é entre 95% e 100%. Saturações abaixo de 90% podem
+        indicar insuficiência respiratória grave e requerem atenção imediata.
+        Exemplo: '98%'.""",
     )
 
 
 class TriagemModel(ModelConfig):
-    """Informações sobre o acolhimento do paciente, incluindo sinais vitais,
-    histórico individual, histórico familiar, motivo da ida e escala de dor."""
+    """
+    Representa o processo de triagem médica, onde um paciente fornece
+    informações sobre seus sinais vitais, histórico médico e familiar,
+    e o motivo da consulta. Esse processo é fundamental para determinar
+    a gravidade da condição do paciente e priorizar o atendimento com
+    base na urgência da situação.
 
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
+    Campos:
+    - sinais_vitais: Contém informações sobre pressão arterial, temperatura,
+      frequência cardíaca, frequência respiratória e saturação de oxigênio.
+    - historico_individual: Informações sobre doenças ou condições
+      pré-existentes, como hipertensão, diabetes, etc. Exemplos de entrada:
+      'hipertensão, diabetes tipo 2'.
+    - historico_familiar: Informações sobre doenças comuns na família, como
+      câncer, doenças cardíacas, etc. Exemplo: 'câncer, mãe; hipertensão, pai'.
+    - motivo: Motivo da consulta, incluindo sintoma principal, data de início
+      dos sintomas, localização do sintoma no corpo e sintomas associados.
+    - escala_dor: Avaliação da dor que o paciente está sentindo em uma escala
+      de 0 a 10, onde 0 significa 'sem dor' e 10 significa 'dor intensa'.
+      Isso ajuda os profissionais de saúde a determinar a necessidade de
+      controle imediato da dor. Exemplo: '9'.
+    - urgencia: Nível de urgência do atendimento, de 0 a 10, sendo 0 pouco
+      urgente e 10 extremamente urgente. Esse campo é usado para classificar
+      a prioridade do atendimento. Exemplo: '10' é uma situação de emergência.
+    """
+
+    id: Optional[int] = Field(
+        None,
+        description="""ID único gerado automaticamente ao registrar a triagem
+        no sistema do hospital, usado para controle e acompanhamento do
+        atendimento.""",
     )
 
-    sinais_vitais: list[SinaisVitaisModel] | None = Field(
-        description="""
-        Lista de aferições dos sinais vitais durante todo o atendimento."""
+    sinais_vitais: Optional[SinaisVitaisModel] = Field(
+        None,
+        description="""Sinais vitais do paciente, como pressão arterial,
+        temperatura, frequência cardíaca, frequência respiratória e saturação
+        de oxigênio, que fornecem informações sobre o estado de saúde do
+          paciente.""",
     )
 
-    historico_individual: str | None = Field(
-        description="""
-        Condições médicas anteriores informadas pelo paciente.
-        Deve ser uma string contento todas as condições médicas anteriores
-        separados por virgula"""
+    historico_individual: Optional[str] = Field(
+        None,
+        description="""Histórico médico do paciente, incluindo condições
+        pré-existentes como doenças cardiovasculares, diabetes, problemas
+        respiratórios, entre outros. Exemplo: 'hipertensão, diabetes tipo 2'.
+        """,
     )
 
-    historico_familiar: str | None = Field(
-        description="""
-        Condições médicas familiares informadas, incluindo parentesco.
-        Deve ser uma string contento todas as condições médicas familiares
-        separados por virgula"""
+    historico_familiar: Optional[str] = Field(
+        None,
+        description="""Histórico médico da família, incluindo doenças
+        prevalentes em parentes próximos, como câncer, doenças cardíacas,
+        diabetes, etc. Exemplo: 'câncer, mãe; hipertensão, pai'.""",
     )
 
-    motivo: MotivoModel | None = Field(
-        description="""Principal queixa informada, incluindo início dos
-        sintomas, localização e sintomas associados."""
+    inicio_sintoma: Optional[str] = Field(
+        None,
+        description="""Data e hora de início dos sintomas. Pode ser uma data
+        exata ou uma estimativa. Exemplo: 'há 2 horas', 'ontem à noite', ou
+        'início há 3 dias'. Sempre que possível, converta para o formato
+        AAAA-MM-DD. Esse campo ajuda a entender a evolução dos sintomas.""",
     )
 
-    escala_dor: int | None = Field(
-        description="""
-        Escala de dor do paciente de 0 a 10, onde 0 é sem dor e 10 é
-        dor intensa."""
+    sintoma: Optional[str] = Field(
+        None,
+        description="""Sintoma principal que levou o paciente a procurar
+        atendimento médico. Pode ser algo como 'dor no peito', 'dificuldade
+        para respirar', 'febre intensa', etc. Este campo é crucial para
+        direcionar o profissional de saúde ao diagnóstico adequado.""",
     )
 
-    urgencia: int | None = Field(
-        description="""Urgência do atendimento em uma escala de 0 a 10, onde 0
-        é pouco urgente e 10 é prioridade máxima."""
+    sintoma_localizacao: Optional[str] = Field(
+        None,
+        description="""Localização do sintoma no corpo. Especificar a área
+        ou parte do corpo onde o paciente sente o sintoma. Exemplos incluem:
+        'dor no peito', 'dificuldade para respirar no peito', 'dor abdominal
+        no lado esquerdo'.""",
     )
 
-
-class AtendimentoModel(ModelConfig):
-    """Dados centralizados sobre o atendimento do paciente, incluindo data,
-    informações do paciente, triagem, consulta e evolução da enfermagem."""
-
-    id: int | None = Field(
-        description='Id gerado pelo banco de dados ao criar o recurso',
-        default=None,
+    sintomas_associados: Optional[str] = Field(
+        None,
+        description="""Sintomas adicionais que acompanham o sintoma principal,
+        como náuseas, tontura, calafrios, etc. Devem ser listados separadamente
+        por vírgulas. Exemplo: 'febre, calafrios, tontura'.""",
     )
 
-    data: datetime = Field(
-        description="""Data e hora da realização do atendimento, padrão é a
-        data atual (datetime.now).""",
+    escala_dor: Optional[str] = Field(
+        None,
+        description="""Avaliação da intensidade da dor que o paciente está
+        sentindo, com base numa escala de 0 a 10, onde 0 significa 'sem dor'
+        e 10 significa 'dor intensa'. Essencial para decidir sobre a
+        necessidade de alívio imediato da dor. Exemplo: '9'.""",
     )
 
-    paciente: PacienteModel = Field(
-        description="""Dados pessoais e históricos do paciente atendido."""
-    )
-
-    triagem: TriagemModel | None = Field(
-        description="""Informações obtidas na triagem, como sinais vitais e
-        motivos para o atendimento.""",
-    )
-
-    consultas: list[ConsultaModel] | None = Field(
-        description="""Informações da consulta médica, incluindo diagnósticos e
-        prescrições.""",
-    )
-
-    evolucoes: list[EvolucaoEnfermagemModel] | None = Field(
-        description="""Registro da evolução da enfermagem, com detalhes sobre
-         intervenções e observações ao longo do atendimento.""",
+    urgencia: Optional[str] = Field(
+        None,
+        description="""Nível de urgência do atendimento médico, de 0 a 10.
+        Um valor de 10 indica uma condição crítica que exige atenção
+        imediata, enquanto 0 indica uma situação sem urgência. Exemplo:
+        '10' é uma emergência médica. Deve ser transformado em número""",
     )
