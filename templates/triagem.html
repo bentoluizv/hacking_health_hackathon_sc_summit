@@ -15,17 +15,17 @@
 </head>
 
 <body class="poppins-regular antialiased text-zinc-800 bg-zinc-100">
-    <div class="container mx-auto h-screen flex flex-col">
+    <div class="container mx-auto min-h-screen flex flex-col">
         <header class="p-4 flex flex-col text-green-600 items-center justify-center">
             <h1 class="text-3xl font-bold">Triagem</h1>
         </header>
 
-        <main class="flex-grow flex flex-col p-4 gap-5 items-center justify-center h-full">
-            <div class="bg-white shadow-lg rounded-lg p-6 w-full h-full">
-                <form id="triagem-form" class="flex flex-col gap-6 h-full">
+        <main class="flex-grow flex flex-col p-4 gap-5 items-center justify-center min-h-screen">
+            <div class="bg-white shadow-lg rounded-lg p-6 w-full w-full flex flex-col md:flex-row gap-6">
+                <form id="triagem-form" class="flex flex-col gap-6 w-full md:w-11/12">
                     <label for="triagem" hidden class="text-zinc-800 font-semibold mb-2">Observações de Triagem</label>
-                    <textarea id="triagem" name="triagem" required
-                        class="w-full h-full px-4 py-2 rounded-lg border border-zinc-300 bg-zinc-100 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition duration-200 ease-in-out"
+                    <textarea id="triagem" name="triagem" rows="25" required
+                        class="w-full px-4 py-2 rounded-lg border border-zinc-300 bg-zinc-100 text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition duration-200 ease-in-out"
                         placeholder="Digite aqui as observações da triagem"></textarea>
 
                     <button type="submit"
@@ -33,6 +33,70 @@
                         Enviar Triagem
                     </button>
                 </form>
+
+                <!-- Tabela de dados -->
+                <div class="bg-white shadow-lg rounded-lg p-6 w-full md:w-1/2">
+                    <div id="result">
+                        <table class="min-w-full bg-white border-collapse border border-zinc-300">
+                            <thead>
+                                <tr>
+                                    <th class="border px-4 py-2 text-left">Campo</th>
+                                    <th class="border px-4 py-2 text-left">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody id="triagem-data">
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Pressão Arterial</td>
+                                    <td class="border px-4 py-2" id="pressao-arterial">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Temperatura</td>
+                                    <td class="border px-4 py-2" id="temperatura">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Frequência Cardíaca</td>
+                                    <td class="border px-4 py-2" id="frequencia-cardiaca">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Frequência Respiratória</td>
+                                    <td class="border px-4 py-2" id="frequencia-respiratoria">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Saturação de Oxigênio</td>
+                                    <td class="border px-4 py-2" id="saturacao-oxigenio">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Histórico Individual</td>
+                                    <td class="border px-4 py-2" id="historico-individual">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Histórico Familiar</td>
+                                    <td class="border px-4 py-2" id="historico-familiar">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Sintoma</td>
+                                    <td class="border px-4 py-2" id="sintoma">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Localização do Sintoma</td>
+                                    <td class="border px-4 py-2" id="sintoma-localizacao">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Sintomas Associados</td>
+                                    <td class="border px-4 py-2" id="sintomas-associados">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Escala de Dor</td>
+                                    <td class="border px-4 py-2" id="escala-dor">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="border px-4 py-2 font-semibold">Urgência</td>
+                                    <td class="border px-4 py-2" id="urgencia">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -42,8 +106,6 @@
             event.preventDefault();
 
             const triagemText = document.getElementById('triagem').value;
-
-
 
             try {
                 const response = await fetch('/api/v1/triagem', {
@@ -61,10 +123,33 @@
                 const result = await response.json();
                 console.log('Triagem enviada com sucesso:', result);
 
+                // Preencher os dados na tabela com os dados retornados
+                fillTableWithData(result);
+
             } catch (error) {
                 console.error('Erro:', error);
             }
         });
+
+        function fillTableWithData(data) {
+            // Preencher os sinais vitais
+            document.getElementById('pressao-arterial').innerText = data.sinais_vitais?.pressao_arterial || 'Não disponível';
+            document.getElementById('temperatura').innerText = data.sinais_vitais?.temperatura || 'Não disponível';
+            document.getElementById('frequencia-cardiaca').innerText = data.sinais_vitais?.frequencia_cardiaca || 'Não disponível';
+            document.getElementById('frequencia-respiratoria').innerText = data.sinais_vitais?.frequencia_respiratoria || 'Não disponível';
+            document.getElementById('saturacao-oxigenio').innerText = data.sinais_vitais?.saturacao_oxigenio || 'Não disponível';
+
+            // Preencher o histórico
+            document.getElementById('historico-individual').innerText = data.historico_individual || 'Não disponível';
+            document.getElementById('historico-familiar').innerText = data.historico_familiar || 'Não disponível';
+
+            // Preencher sintomas
+            document.getElementById('sintoma').innerText = data.sintoma || 'Não disponível';
+            document.getElementById('sintoma-localizacao').innerText = data.sintoma_localizacao || 'Não disponível';
+            document.getElementById('sintomas-associados').innerText = data.sintomas_associados || 'Não disponível';
+            document.getElementById('escala-dor').innerText = data.escala_dor || 'Não disponível';
+            document.getElementById('urgencia').innerText = data.urgencia || 'Não disponível';
+        }
     </script>
 </body>
 
