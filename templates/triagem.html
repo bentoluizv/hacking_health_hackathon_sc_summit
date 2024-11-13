@@ -107,13 +107,15 @@
 
             const triagemText = document.getElementById('triagem').value;
 
+            const data = { triagem_text: triagemText };
+
             try {
                 const response = await fetch('/api/v1/triagem', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: triagemText
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
