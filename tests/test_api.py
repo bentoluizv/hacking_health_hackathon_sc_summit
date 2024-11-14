@@ -36,13 +36,11 @@ def test_triagem_api(client):
 
     assert triagem.inicio_sintoma == '08/11/2024'  # type: ignore
 
-    # Asserts para o histórico individual
     assert (
         triagem.historico_individual
         == 'diabetes tipo 2, hipertensão arterial e asma'
     )
 
-    # Asserts para o histórico familiar
     assert (
         triagem.historico_familiar
         == 'mãe: problemas cardíacos; avó materna: câncer de mama'
