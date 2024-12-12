@@ -1,0 +1,33 @@
+# Ignorar arquivos e diretórios comuns desnecessários para o contêiner
+
+# Pastas de cache e artefatos de compilação
+__pycache__/
+*.py[cod]
+*.so
+
+# Cache de pacotes e dependências
+poetry.lock.backup
+*.egg-info/
+.dist/
+.build/
+
+# Configurações de IDEs e editores
+.vscode/
+.idea/
+*.swp
+
+# Controle de versão
+.git/
+.gitignore
+
+# Arquivos temporários do sistema
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Testes e dados locais
+tests/
+*.test.*
+*.sqlite
+*.db
