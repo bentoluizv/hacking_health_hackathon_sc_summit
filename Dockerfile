@@ -19,4 +19,4 @@ COPY . .
 
 EXPOSE 8001
 
-CMD ["uvicorn", "hackathon.app:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["uvicorn", "hackathon.app:app", "--host", "0.0.0.0","--proxy-headers", "--port", "8001"]
