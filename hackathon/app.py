@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,7 +9,6 @@ from hackathon.api import (
 
 app = FastAPI()
 
-app.add_middleware(HTTPSRedirectMiddleware)
 
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
